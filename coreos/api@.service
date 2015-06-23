@@ -1,0 +1,41 @@
+[Unit]
+Description=REST API HTTP Service
+After=docker.service
+Requires=docker.service
+After=etcd.service
+Requires=etcd.service
+
+[Service]
+TimeoutStartSec=0
+TimeoutStopSec=360
+EnvironmentFile=/etc/environment
+Environment=INSTANCE=%i 
+ExecStartPre=-/usr/bin/docker stop api
+ExecStartPre=-/usr/bin/docker rm api
+ExecStartPre=/usr/bin/docker pull bleshik/api:latest
+ExecStart=/bin/sh -c '/usr/bin/docker run\
+        -e "JAVA_OPTS=-XX:PermSize=96m -XX:MaxPermSize=96m -Xmx128m -Xms128m -Dfile.encoding=UTF-8 \
+                      -Dcom.sun.management.jmxremote \
+                      -Dcom.sun.management.jmxremote.port=9010 \
+                      -Dcom.sun.management.jmxremote.local.only=false \
+                      -Dcom.sun.management.jmxremote.authenticate=false \
+                      -Dcom.sun.management.jmxremote.ssl=false"\
+        -e "ENVIRONMENT=production"\
+        -e "T=Москва"\
+        -e "PRIVATE_IP=${COREOS_PRIVATE_IPV4}"\
+        -e "BALANCER_IP=`fleetctl list-machines | grep public | cut -f2`"\
+        -e "ETCD_ENDPOINT=http://172.17.42.1:4001"\
+        --name api\
+        --rm=true\
+        -p 8080\
+        -p 9010\
+        -p 9000\
+        bleshik/api:latest'
+ExecStop=-/usr/bin/docker stop api
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]                                                                                                                                                                            
+Conflicts=%p@*.service

@@ -1,0 +1,30 @@
+[Unit]
+Description=Web App
+After=docker.service
+Requires=docker.service
+After=etcd.service
+Requires=etcd.service
+
+[Service]
+TimeoutStartSec=0
+TimeoutStopSec=360
+EnvironmentFile=/etc/environment
+Environment=INSTANCE=%i
+ExecStartPre=-/usr/bin/docker stop web-app
+ExecStartPre=-/usr/bin/docker rm web-app
+ExecStartPre=/usr/bin/docker pull bleshik/web-app:latest
+ExecStart=/bin/sh -c '/usr/bin/docker run\
+          -e "ENVIRONMENT=production"\
+          -e "BALANCER_IP=`fleetctl list-machines | grep public | cut -f2`"\
+          --name web-app\
+          --rm=true\
+          -p 8000\
+          bleshik/web-app:latest'
+ExecStop=-/usr/bin/docker stop web-app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+Conflicts=%p@*.service
