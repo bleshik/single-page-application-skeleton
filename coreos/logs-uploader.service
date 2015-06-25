@@ -9,9 +9,10 @@ ExecStart=/bin/sh -c 'journalctl -o short -f |\
           grep -v ".*Fatal errors found in configuration.*" |\
           grep -v \'.*docker.*level="info".*\' |\
           grep -v \'.*dockerd.*level=info.*\' |\
+          grep -v ".*docker0.*" |\
           grep -v ".*Running \'python /tmp/register.py\'.*" |\
           grep -v ".*failed to .* one or more.*" |\
-          grep -v ".*returned error: no such id:.*" |\
+          grep -v ".*no such id:.*" |\
           grep -v ".*sshd.*" |\
           grep -v ".* veth.*" |\
           grep -v ".*systemd.*" |\
