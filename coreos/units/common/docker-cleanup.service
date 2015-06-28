@@ -8,8 +8,8 @@ Requires=fleet.service
 [Service]
 TimeoutStartSec=0
 ExecStart=/bin/sh -c 'while [ 1 ] ; do\
-            curl https://raw.githubusercontent.com/HardySimpson/docker-cleanup/c627f40367fdd718f7d705e9024f4bdbd99b5681/docker-cleanup.sh --silent | bash -s;\
         sleep 3600;\
+        curl https://raw.githubusercontent.com/HardySimpson/docker-cleanup/c627f40367fdd718f7d705e9024f4bdbd99b5681/docker-cleanup.sh --silent | bash -s;\
     done'
 Restart=always
 
