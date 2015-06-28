@@ -14,7 +14,7 @@ ExecStart=/bin/sh -c "while [ 1 ] ; do \
               sed -e 's/\s\+us,\s\+/,CPU.system=/g' |\
               sed -e 's/\s\+sy,\s\+.*ni,\s\+/,CPU.idle=/g' |\
               sed -e 's/\s\+id.*//g' |\
-              sed -e 's/\.[0-9]\+/%/g'),$(free | tr '\n' ' ' |\
+              sed -e 's/\.[0-9]\+/%/g'),$(free -b | tr '\n' ' ' |\
               head -1 |\
               sed -e 's/[^M]*Mem:\s\+\([0-9]\+\)\s\+[^c]*cache:\s\+\([0-9]\+\)\s\+.*/Mem.total=\1,Mem.active=\2/g'),$(modulesStats)|\
               awk '{ print \"${LOGENTRIES_TOKEN}\", $0; fflush(); }' |\
